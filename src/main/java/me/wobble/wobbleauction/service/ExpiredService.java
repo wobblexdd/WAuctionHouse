@@ -32,15 +32,21 @@ public final class ExpiredService {
         }
 
         for (ExpiredRepository.ExpiredEntry entry : items) {
+            ItemStack item = entry.item();
+            if (item == null) {
+                expiredRepository.deleteById(entry.id());
+                continue;
+            }
+
             if (player.getInventory().firstEmpty() == -1) {
                 return ClaimResult.INVENTORY_FULL;
             }
 
-            ItemStack item = entry.item();
-            player.getInventory().addItem(item);
+            player.getInventory().addItem(item.clone());
             expiredRepository.deleteById(entry.id());
         }
 
         return ClaimResult.SUCCESS;
     }
+
 }

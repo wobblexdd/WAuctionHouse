@@ -52,6 +52,11 @@ public final class AuctionMenuListener implements Listener {
             return;
         }
 
+        if (!(event.getClick().isLeftClick() || event.getClick().isRightClick())) {
+            event.setCancelled(true);
+            return;
+        }
+
         if (event.getView().title().equals(ChatUtil.mm(plugin.getConfig().getString("gui.title", "<dark_gray>ᴀᴜᴄᴛɪᴏɴ")))) {
             handleAuctionMenu(event, player);
             return;

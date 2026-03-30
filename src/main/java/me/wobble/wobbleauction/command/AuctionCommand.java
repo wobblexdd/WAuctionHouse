@@ -83,10 +83,17 @@ public final class AuctionCommand implements CommandExecutor, TabCompleter {
 
         switch (result) {
             case SUCCESS -> {
+                double taxPercent = auctionService.getTaxPercent();
+                double netAmount = price;
+                if (taxPercent > 0.0) {
+                    netAmount = Math.max(0.0, price - (price * (taxPercent / 100.0)));
+                }
+
                 player.sendMessage(ChatUtil.message(
                         plugin,
                         "listing-created",
-                        "{price}", auctionService.format(price)
+                        "{price}", auctionService.format(price),
+                        "{net}", auctionService.format(netAmount)
                 ));
                 SoundUtil.playSuccess(plugin, player);
             }
