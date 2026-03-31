@@ -80,6 +80,18 @@ public final class AuctionService {
 
 
 
+    public enum CancelResult {
+
+        SUCCESS,
+
+        NOT_FOUND,
+
+        INVENTORY_FULL
+
+    }
+
+
+
     private final WobbleAuction plugin;
 
     private final EconomyProvider economyProvider;
@@ -320,6 +332,31 @@ public final class AuctionService {
     }
 
 
+
+
+    public CancelResult cancelListing(Player seller, String listingIdPrefix) {
+        if (listingIdPrefix == null || listingIdPrefix.isBlank()) {
+            return CancelResult.NOT_FOUND;
+        }
+
+        Optional<AuctionListing> optionalListing = auctionRepository.findActiveBySellerPrefix(
+                seller.getUniqueId(),
+                listingIdPrefix.trim()
+        );
+
+        if (optionalListing.isEmpty()) {
+            return CancelResult.NOT_FOUND;
+        }
+
+        AuctionListing listing = optionalListing.get();
+        if (seller.getInventory().firstEmpty() == -1) {
+            return CancelResult.INVENTORY_FULL;
+        }
+
+        seller.getInventory().addItem(listing.getItem().clone());
+        auctionRepository.cancelListing(listing.getListingId());
+        return CancelResult.SUCCESS;
+    }
 
     public void expireListing(AuctionListing listing) {
 

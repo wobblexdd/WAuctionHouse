@@ -53,6 +53,7 @@ public final class AuctionCommand implements CommandExecutor, TabCompleter {
             case "my" -> handleMy(player);
             case "claim" -> handleClaim(player);
             case "expired" -> handleExpired(player);
+            case "cancel" -> handleCancel(player, args);
             case "reload" -> handleReload(player);
             default -> {
                 player.sendMessage(ChatUtil.mm("<red>Unknown subcommand.</red>"));
@@ -187,6 +188,32 @@ public final class AuctionCommand implements CommandExecutor, TabCompleter {
         }
     }
 
+
+    private void handleCancel(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage(ChatUtil.mm("<red>Usage: /ah cancel <listing-id-prefix></red>"));
+            SoundUtil.playError(plugin, player);
+            return;
+        }
+
+        AuctionService.CancelResult result = auctionService.cancelListing(player, args[1]);
+
+        switch (result) {
+            case SUCCESS -> {
+                player.sendMessage(ChatUtil.message(plugin, "listing-cancelled"));
+                SoundUtil.playSuccess(plugin, player);
+            }
+            case NOT_FOUND -> {
+                player.sendMessage(ChatUtil.message(plugin, "listing-cancel-not-found"));
+                SoundUtil.playError(plugin, player);
+            }
+            case INVENTORY_FULL -> {
+                player.sendMessage(ChatUtil.mm("<red>Your inventory is full.</red>"));
+                SoundUtil.playError(plugin, player);
+            }
+        }
+    }
+
     private void handleReload(Player player) {
         if (!player.hasPermission("wobble.auction.reload")) {
             player.sendMessage(ChatUtil.message(plugin, "no-permission"));
@@ -208,6 +235,7 @@ public final class AuctionCommand implements CommandExecutor, TabCompleter {
             suggestions.add("my");
             suggestions.add("claim");
             suggestions.add("expired");
+            suggestions.add("cancel");
             suggestions.add("reload");
             return filter(suggestions, args[0]);
         }

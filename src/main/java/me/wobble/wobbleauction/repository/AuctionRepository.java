@@ -128,6 +128,29 @@ public final class AuctionRepository {
         return listings;
     }
 
+
+    public Optional<AuctionListing> findActiveBySellerPrefix(UUID sellerId, String listingIdPrefix) {
+        String sql = "SELECT * FROM auction_listings WHERE seller_uuid = ? AND status = 'ACTIVE'";
+        String normalized = listingIdPrefix == null ? "" : listingIdPrefix.toLowerCase();
+
+        try (PreparedStatement statement = sqliteManager.getConnection().prepareStatement(sql)) {
+            statement.setString(1, sellerId.toString());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AuctionListing listing = map(resultSet);
+                    if (listing.getListingId().toString().toLowerCase().startsWith(normalized)) {
+                        return Optional.of(listing);
+                    }
+                }
+            }
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Could not find seller listing by prefix", exception);
+        }
+
+        return Optional.empty();
+    }
+
     public int countActiveBySeller(UUID sellerId) {
         String sql = "SELECT COUNT(*) FROM auction_listings WHERE seller_uuid = ? AND status = 'ACTIVE'";
 
@@ -144,6 +167,25 @@ public final class AuctionRepository {
         }
 
         return 0;
+    }
+
+
+    public void cancelListing(UUID listingId) {
+        String sql = """
+                UPDATE auction_listings
+                SET status = ?, buyer_uuid = ?, sold_at = ?
+                WHERE listing_id = ?
+                """;
+
+        try (PreparedStatement statement = sqliteManager.getConnection().prepareStatement(sql)) {
+            statement.setString(1, ListingStatus.CANCELLED.name());
+            statement.setString(2, null);
+            statement.setObject(3, null);
+            statement.setString(4, listingId.toString());
+            statement.executeUpdate();
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Could not cancel listing", exception);
+        }
     }
 
     public void updateStatus(UUID listingId, ListingStatus status, UUID buyerId, Long soldAt) {
