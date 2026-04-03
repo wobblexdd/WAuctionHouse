@@ -2,15 +2,19 @@ package me.wobble.wobbleauction.listener;
 
 import me.wobble.wobbleauction.WobbleAuction;
 import me.wobble.wobbleauction.gui.AuctionGUI;
+import me.wobble.wobbleauction.gui.ManagedGui;
 import me.wobble.wobbleauction.gui.MyListingsGUI;
 import me.wobble.wobbleauction.model.AuctionListing;
 import me.wobble.wobbleauction.service.AuctionService;
 import me.wobble.wobbleauction.util.ChatUtil;
 import me.wobble.wobbleauction.util.SoundUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,10 +44,6 @@ public final class AuctionMenuListener implements Listener {
             return;
         }
 
-        if (event.getView().title() == null) {
-            return;
-        }
-
         if (event.getClickedInventory() == null) {
             return;
         }
@@ -57,14 +57,20 @@ public final class AuctionMenuListener implements Listener {
             return;
         }
 
-        if (event.getView().title().equals(ChatUtil.mm(plugin.getConfig().getString("gui.title", "<dark_gray>ᴀᴜᴄᴛɪᴏɴ")))) {
-            handleAuctionMenu(event, player);
+        ManagedGui.Type guiType = ManagedGui.getType(event.getView());
+        if (guiType == null) {
             return;
         }
 
-        if (event.getView().title().equals(ChatUtil.mm("<dark_gray>ᴍʏ ʟɪsᴛɪɴɢs"))) {
-            handleMyListingsMenu(event, player);
+        switch (guiType) {
+            case AUCTION_MAIN -> handleAuctionMenu(event, player);
+            case MY_LISTINGS -> handleMyListingsMenu(event, player);
         }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        clearState(event.getPlayer().getUniqueId());
     }
 
     private void handleAuctionMenu(InventoryClickEvent event, Player player) {
@@ -244,6 +250,14 @@ public final class AuctionMenuListener implements Listener {
     }
 
     public void cancelAwaitingSearch(UUID playerId) {
+        awaitingSearch.remove(playerId);
+    }
+
+    public void clearState(UUID playerId) {
+        auctionPages.remove(playerId);
+        myPages.remove(playerId);
+        sortTypes.remove(playerId);
+        searchQueries.remove(playerId);
         awaitingSearch.remove(playerId);
     }
 

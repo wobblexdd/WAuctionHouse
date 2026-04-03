@@ -71,7 +71,7 @@ public final class AuctionGUI {
             page = maxPage;
         }
 
-        Inventory inventory = Bukkit.createInventory(null, size, ChatUtil.mm(title));
+        Inventory inventory = ManagedGui.createInventory(ManagedGui.Type.AUCTION_MAIN, size, ChatUtil.mm(title));
 
         fillBackground(inventory);
         placeFrameAccents(inventory);

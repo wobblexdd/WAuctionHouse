@@ -8,6 +8,7 @@ auction:
   listing-duration-hours: 24
   check-interval-seconds: 60
   max-active-listings-default: 3
+  max-active-listings-vip: 10
 
   blocked-materials:
     - BEDROCK

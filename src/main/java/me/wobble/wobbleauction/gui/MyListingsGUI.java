@@ -5,7 +5,6 @@ import me.wobble.wobbleauction.model.AuctionListing;
 import me.wobble.wobbleauction.util.ChatUtil;
 import me.wobble.wobbleauction.util.TextStyleUtil;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -54,7 +53,7 @@ public final class MyListingsGUI {
             page = maxPage;
         }
 
-        Inventory inventory = Bukkit.createInventory(null, 54, ChatUtil.mm("<dark_gray>ᴍʏ ʟɪsᴛɪɴɢs"));
+        Inventory inventory = ManagedGui.createInventory(ManagedGui.Type.MY_LISTINGS, 54, ChatUtil.mm("<dark_gray>ᴍʏ ʟɪsᴛɪɴɢs"));
 
         fillBackground(inventory);
 
@@ -105,7 +104,7 @@ public final class MyListingsGUI {
             lore.add(ChatUtil.mm("<gray>Price:</gray> <gold>" + plugin.getAuctionService().format(listing.getPrice()) + "</gold>"));
             lore.add(ChatUtil.mm("<gray>Status:</gray> <yellow>" + listing.getStatus().name() + "</yellow>"));
             lore.add(ChatUtil.mm("<gray>ID:</gray> <dark_gray>" + listing.getListingId().toString().substring(0, 8) + "</dark_gray>"));
-            lore.add(ChatUtil.mm("<dark_gray>—"));
+            lore.add(ChatUtil.mm("<dark_gray>-"));
             lore.add(ChatUtil.mm(TextStyleUtil.hint("your active listing")));
 
             if (meta != null) {

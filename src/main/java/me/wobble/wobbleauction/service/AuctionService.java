@@ -156,7 +156,7 @@ public final class AuctionService {
 
         if (player.hasPermission("wobble.auction.limit.vip")) {
 
-            return 10;
+            return plugin.getConfig().getInt("auction.max-active-listings-vip", 10);
 
         }
 
