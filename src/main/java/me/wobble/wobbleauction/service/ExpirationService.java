@@ -32,8 +32,10 @@ public final class ExpirationService {
             List<AuctionListing> expired = auctionRepository.findExpiredActive(now);
 
             for (AuctionListing listing : expired) {
-                auctionRepository.updateStatus(listing.getListingId(), me.wobble.wobbleauction.model.ListingStatus.EXPIRED, null, null);
-                expiredRepository.add(listing.getSellerId(), listing.getItem(), now);
+                boolean marked = auctionRepository.expireListingIfActive(listing.getListingId());
+                if (marked) {
+                    expiredRepository.add(listing.getSellerId(), listing.getItem(), now);
+                }
             }
         }, intervalTicks, intervalTicks);
     }

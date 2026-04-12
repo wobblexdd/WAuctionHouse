@@ -169,12 +169,91 @@ public final class AuctionRepository {
         return 0;
     }
 
+    public boolean completePurchaseIfActive(UUID listingId,
+                                            UUID sellerId,
+                                            UUID buyerId,
+                                            double price,
+                                            double sellerProceeds,
+                                            long soldAt) {
+        Connection connection = sqliteManager.getConnection();
+        boolean previousAutoCommit;
 
-    public void cancelListing(UUID listingId) {
+        try {
+            previousAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+
+            String updateListingSql = """
+                    UPDATE auction_listings
+                    SET status = ?, buyer_uuid = ?, sold_at = ?
+                    WHERE listing_id = ? AND status = 'ACTIVE'
+                    """;
+
+            try (PreparedStatement updateListing = connection.prepareStatement(updateListingSql)) {
+                updateListing.setString(1, ListingStatus.SOLD.name());
+                updateListing.setString(2, buyerId.toString());
+                updateListing.setLong(3, soldAt);
+                updateListing.setString(4, listingId.toString());
+
+                int updated = updateListing.executeUpdate();
+                if (updated != 1) {
+                    connection.rollback();
+                    connection.setAutoCommit(previousAutoCommit);
+                    return false;
+                }
+            }
+
+            String historySql = """
+                    INSERT INTO auction_history (listing_id, seller_uuid, buyer_uuid, price, sold_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    """;
+
+            try (PreparedStatement history = connection.prepareStatement(historySql)) {
+                history.setString(1, listingId.toString());
+                history.setString(2, sellerId.toString());
+                history.setString(3, buyerId.toString());
+                history.setDouble(4, price);
+                history.setLong(5, soldAt);
+                history.executeUpdate();
+            }
+
+            String claimSql = """
+                    INSERT INTO auction_claims (player_uuid, amount)
+                    VALUES (?, ?)
+                    ON CONFLICT(player_uuid)
+                    DO UPDATE SET amount = auction_claims.amount + excluded.amount
+                    """;
+
+            try (PreparedStatement claim = connection.prepareStatement(claimSql)) {
+                claim.setString(1, sellerId.toString());
+                claim.setDouble(2, sellerProceeds);
+                claim.executeUpdate();
+            }
+
+            connection.commit();
+            connection.setAutoCommit(previousAutoCommit);
+            return true;
+        } catch (SQLException exception) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                exception.addSuppressed(rollbackException);
+            }
+
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException resetException) {
+                exception.addSuppressed(resetException);
+            }
+
+            throw new IllegalStateException("Could not complete listing purchase transaction", exception);
+        }
+    }
+
+    public boolean cancelListingIfActiveAndSeller(UUID listingId, UUID sellerId) {
         String sql = """
                 UPDATE auction_listings
                 SET status = ?, buyer_uuid = ?, sold_at = ?
-                WHERE listing_id = ?
+                WHERE listing_id = ? AND seller_uuid = ? AND status = 'ACTIVE'
                 """;
 
         try (PreparedStatement statement = sqliteManager.getConnection().prepareStatement(sql)) {
@@ -182,51 +261,28 @@ public final class AuctionRepository {
             statement.setString(2, null);
             statement.setObject(3, null);
             statement.setString(4, listingId.toString());
-            statement.executeUpdate();
+            statement.setString(5, sellerId.toString());
+            return statement.executeUpdate() == 1;
         } catch (SQLException exception) {
             throw new IllegalStateException("Could not cancel listing", exception);
         }
     }
 
-    public void updateStatus(UUID listingId, ListingStatus status, UUID buyerId, Long soldAt) {
+    public boolean expireListingIfActive(UUID listingId) {
         String sql = """
                 UPDATE auction_listings
                 SET status = ?, buyer_uuid = ?, sold_at = ?
-                WHERE listing_id = ?
+                WHERE listing_id = ? AND status = 'ACTIVE'
                 """;
 
         try (PreparedStatement statement = sqliteManager.getConnection().prepareStatement(sql)) {
-            statement.setString(1, status.name());
-            statement.setString(2, buyerId == null ? null : buyerId.toString());
-
-            if (soldAt == null) {
-                statement.setObject(3, null);
-            } else {
-                statement.setLong(3, soldAt);
-            }
-
+            statement.setString(1, ListingStatus.EXPIRED.name());
+            statement.setString(2, null);
+            statement.setObject(3, null);
             statement.setString(4, listingId.toString());
-            statement.executeUpdate();
+            return statement.executeUpdate() == 1;
         } catch (SQLException exception) {
-            throw new IllegalStateException("Could not update listing status", exception);
-        }
-    }
-
-    public void insertHistory(UUID listingId, UUID sellerId, UUID buyerId, double price, long soldAt) {
-        String sql = """
-                INSERT INTO auction_history (listing_id, seller_uuid, buyer_uuid, price, sold_at)
-                VALUES (?, ?, ?, ?, ?)
-                """;
-
-        try (PreparedStatement statement = sqliteManager.getConnection().prepareStatement(sql)) {
-            statement.setString(1, listingId.toString());
-            statement.setString(2, sellerId.toString());
-            statement.setString(3, buyerId.toString());
-            statement.setDouble(4, price);
-            statement.setLong(5, soldAt);
-            statement.executeUpdate();
-        } catch (SQLException exception) {
-            throw new IllegalStateException("Could not insert auction history", exception);
+            throw new IllegalStateException("Could not expire listing", exception);
         }
     }
 
