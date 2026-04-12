@@ -62,7 +62,7 @@ public final class WobbleAuction extends JavaPlugin {
         this.expiredRepository = new ExpiredRepository(sqliteManager);
 
         this.claimService = new ClaimService(this, economyProvider, claimRepository);
-        this.auctionService = new AuctionService(this, economyProvider, auctionRepository, claimRepository, expiredRepository);
+        this.auctionService = new AuctionService(this, economyProvider, auctionRepository, expiredRepository);
         this.expirationService = new ExpirationService(this, auctionRepository, expiredRepository);
         this.expiredService = new ExpiredService(this, expiredRepository);
 
