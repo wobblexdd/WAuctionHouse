@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.wobble</groupId>
-    <artifactId>WobbleAuction</artifactId>
+    <artifactId>WAuctionHouse</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>WobbleAuction</name>
+    <name>WAuctionHouse</name>
     <description>A modern auction house plugin for Paper 1.21+</description>
 
     <properties>
@@ -51,7 +51,7 @@
     </dependencies>
 
     <build>
-        <finalName>WobbleAuction-1.0.0</finalName>
+        <finalName>WAuctionHouse-1.0.0</finalName>
 
         <plugins>
             <plugin>

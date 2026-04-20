@@ -261,7 +261,7 @@ public final class AuctionGUI {
 
         inventory.setItem(INFO_SLOT, simpleItem(
                 Material.BOOK,
-                "<gold>" + TextStyleUtil.smallCaps("WobbleAuction"),
+                "<gold>" + TextStyleUtil.smallCaps("WAuctionHouse"),
                 List.of(
                         ChatUtil.mm("<gray>Page:</gray> <yellow>" + page + "</yellow><gray>/</gray><yellow>" + maxPage + "</yellow>"),
                         ChatUtil.mm("<gray>Total entries:</gray> <gold>" + totalEntries + "</gold>"),

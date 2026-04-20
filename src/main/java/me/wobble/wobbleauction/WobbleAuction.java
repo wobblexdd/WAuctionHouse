@@ -81,7 +81,7 @@ public final class WobbleAuction extends JavaPlugin {
 
         expirationService.start();
 
-        getLogger().info("WobbleAuction enabled.");
+        getLogger().info("WAuctionHouse enabled.");
     }
 
     @Override
@@ -94,7 +94,7 @@ public final class WobbleAuction extends JavaPlugin {
             sqliteManager.close();
         }
 
-        getLogger().info("WobbleAuction disabled.");
+        getLogger().info("WAuctionHouse disabled.");
     }
 
     public void reloadPlugin() {

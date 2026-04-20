@@ -1,4 +1,4 @@
-# ⚔️ WobbleAuction
+# ⚔️ WAuctionHouse
 
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=java&logoColor=white)
 ![Paper](https://img.shields.io/badge/Paper-1.21-F6F6F6?style=for-the-badge)
@@ -7,7 +7,7 @@
 
 A modern, production-ready **auction house plugin** for Minecraft servers running **Paper 1.21+**.
 
-WobbleAuction provides a complete player marketplace with listing creation, GUI browsing, live purchasing, claimable sale earnings, automatic listing expiration, compact money formatting, and SQLite-backed storage.
+WAuctionHouse provides a complete player marketplace with listing creation, GUI browsing, live purchasing, claimable sale earnings, automatic listing expiration, compact money formatting, and SQLite-backed storage.
 
 ---
 

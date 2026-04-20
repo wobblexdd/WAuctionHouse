@@ -1,4 +1,4 @@
-name: WobbleAuction
+name: WAuctionHouse
 version: 1.0.0
 main: me.wobble.wobbleauction.WobbleAuction
 api-version: '1.21'

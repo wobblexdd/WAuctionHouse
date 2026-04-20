@@ -1,0 +1,35 @@
+database:
+  file: data.db
+
+auction:
+  min-price: 100.0
+  max-price: 1000000000.0
+  tax-percent: 5.0
+  listing-duration-hours: 24
+  check-interval-seconds: 60
+  max-active-listings-default: 3
+  max-active-listings-vip: 10
+
+  blocked-materials:
+    - BEDROCK
+    - BARRIER
+
+gui:
+  title: "<dark_gray>ᴀᴜᴄᴛɪᴏɴ"
+  size: 54
+  items-per-page: 28
+
+  slots:
+    previous-page: 45
+    next-page: 53
+    close: 49
+    info: 4
+    search: 48
+    sort: 50
+    reset-filter: 51
+
+sounds:
+  enabled: true
+  success: ENTITY_EXPERIENCE_ORB_PICKUP
+  error: ENTITY_VILLAGER_NO
+  click: UI_BUTTON_CLICK
