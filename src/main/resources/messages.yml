@@ -1,4 +1,4 @@
-prefix: "<gray>[<gold>WAuctionHouse</gold>]</gray> "
+prefix: "<gray>[<gold>KAuctionHouse</gold>]</gray> "
 
 only-player: "<red>Only players can use this command.</red>"
 no-permission: "<red>You do not have permission.</red>"

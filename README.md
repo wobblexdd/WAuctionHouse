@@ -1,4 +1,4 @@
-# ⚔️ WAuctionHouse
+# ⚔️ KAuctionHouse
 
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=java&logoColor=white)
 ![Paper](https://img.shields.io/badge/Paper-1.21-F6F6F6?style=for-the-badge)
@@ -7,7 +7,7 @@
 
 A modern, production-ready **auction house plugin** for Minecraft servers running **Paper 1.21+**.
 
-WAuctionHouse provides a complete player marketplace with listing creation, GUI browsing, live purchasing, claimable sale earnings, automatic listing expiration, compact money formatting, and SQLite-backed storage.
+KAuctionHouse provides a complete player marketplace with listing creation, GUI browsing, live purchasing, claimable sale earnings, automatic listing expiration, compact money formatting, and SQLite-backed storage.
 
 ---
 
@@ -101,10 +101,10 @@ Compact number formatting is used for auction prices:
 
 | Permission | Description |
 |-----------|------------|
-| `wobble.auction.admin` | Full admin access |
-| `wobble.auction.reload` | Reload plugin |
-| `wobble.auction.limit.default` | Default listing limit |
-| `wobble.auction.limit.vip` | VIP listing limit |
+| `klouse.auction.admin` | Full admin access |
+| `klouse.auction.reload` | Reload plugin |
+| `klouse.auction.limit.default` | Default listing limit |
+| `klouse.auction.limit.vip` | VIP listing limit |
 
 ---
 
